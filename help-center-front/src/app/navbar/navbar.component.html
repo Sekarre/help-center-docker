@@ -1,0 +1,28 @@
+<p *ngIf="isUserAuthenticated()">
+  <mat-toolbar>
+    <span>Innos support</span>
+    <span class="spacer-small"></span>
+    <a mat-button [routerLink]="['/chat-channels']">Chats</a>
+    <a mat-button [routerLink]="['/issues']">Issues</a>
+    <a mat-button [routerLink]="['/issues/new']">New issue</a>
+    <span class="spacer-large"></span>
+    <a class="role">{{username}}</a>
+    <button mat-button [matMenuTriggerFor]="menu">
+      <mat-icon matBadge="{{allEventsCount}}" matBadgeColor="warn" fontIcon="notifications"></mat-icon>
+    </button>
+    <button mat-button>
+      <mat-icon (click)="logout()" fontIcon="exit_to_app"></mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button *ngFor="let e of this.eventService.getEvents() | keyvalue" mat-menu-item
+              (click)="navigateToDestination(this.eventService.getDestinationIdFromMapKey(e.key), this.eventService.getEventTypeIdFromMapKey(e.key))">
+        <span matBadgePosition="before" matBadgeSize="small" matBadge="{{e.value.length}}"
+              matBadgeOverlap="false">
+          {{getNotificationMessage(this.eventService.getDestinationIdFromMapKey(e.key), this.eventService.getEventTypeIdFromMapKey(e.key))}}
+        </span>
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+</p>
+
+

@@ -1,0 +1,52 @@
+.card-container.card {
+  width: 400px;
+  padding: 40px 40px;
+  margin-top: 50px;
+}
+
+.card {
+  background-color: #F7F7F7;
+  margin: auto;
+}
+
+.profile-img-card {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 10px;
+  display: block;
+  border-radius: 50%;
+}
+
+.profile-name-card {
+  font-size: 16px;
+  font-weight: bold;
+  min-height: 1em;
+}
+
+.form-signing input[type=password],
+.form-signing input[type=text],
+.form-signing button {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.btn.btn-signing {
+  background-color: rgb(104, 145, 162);
+  font-weight: 700;
+  font-size: 14px;
+  height: 36px;
+  border-radius: 3px;
+  border: none;
+}
+
+.btn.btn-signing:hover,
+.btn.btn-signing:active,
+.btn.btn-signing:focus {
+  background-color: rgb(65, 147, 166);
+}
+
+.center-wrapper {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}

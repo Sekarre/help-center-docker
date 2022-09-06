@@ -1,0 +1,50 @@
+<div class="center">
+  <div class="row-cols-1">
+    <mat-card >
+      <button *ngIf="isAllowedToView()" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" >
+        <button *ngIf="isAllowedToView()" mat-menu-item (click)="openDialogForPersonAdd()">
+          <mat-icon>person_add</mat-icon>
+          <span>add person</span>
+        </button>
+        <button *ngIf="isAllowedToView()" mat-menu-item (click)="openDialogForParticipants()">
+          <mat-icon>person</mat-icon>
+          <span>Show participants</span>
+        </button>
+      </mat-menu>
+      <mat-card-subtitle align="end">Created by: {{issue.firstName}} {{issue.lastName}}</mat-card-subtitle>
+      <mat-card-subtitle align="end">Status: {{issue.issueStatus}}</mat-card-subtitle>
+      <mat-card-title>{{issue.title}}
+        <mat-card-subtitle></mat-card-subtitle>
+        <mat-card-subtitle>created at: {{issue.createdAt}}</mat-card-subtitle>
+        <mat-card-subtitle>updated at: {{issue.updatedAt}}</mat-card-subtitle>
+      </mat-card-title>
+      <mat-divider inset></mat-divider>
+      <mat-card-subtitle></mat-card-subtitle>
+      <mat-card-content>
+        <p>Description:</p>
+        <p>{{issue.issue}}</p>
+      </mat-card-content>
+      <mat-divider inset></mat-divider>
+      <mat-divider inset></mat-divider>
+      <mat-form-field *ngIf="isAllowedToView()">
+        <mat-label>Status type</mat-label>
+        <mat-select [(ngModel)]="status">
+          <mat-option  *ngFor="let statusType of statusTypes" [value]="statusType">
+            {{statusType}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button *ngIf="isAllowedToView()" mat-button [disabled]="!status" (click)="openDialogForStatus()">Change status</button>
+      <mat-card-actions align="end">
+        <button mat-button *ngIf="isAllowedToView()" (click)="openDialogForChatLogs()">Show chat logs</button>
+        <button mat-button (click)="joinChat()">Join chat</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+  <mat-grid-list cols="2" rowHeight="50px"></mat-grid-list>
+  <app-comments></app-comments>
+</div>
+<app-sticky-chat #stickyChat *ngIf="showChat" [channelId]="issue.channelId" (toDestroyEvent)="destroyStickyChat()"></app-sticky-chat>

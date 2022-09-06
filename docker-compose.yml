@@ -1,0 +1,111 @@
+version: '3'
+services:
+    help-center-discovery-server:
+        depends_on:
+            - help-center-db
+            - help-center-rabbit-chat
+            - help-center-rabbit-notifications            
+        build:
+            context: ./help-center-discovery-server
+            dockerfile: Dockerfile
+        environment:
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://help-center-discovery-server:8761/eureka
+    help-center-gateway:
+        depends_on:
+            - help-center-discovery-server    
+        build:
+            context: ./help-center-gateway
+            dockerfile: Dockerfile
+        ports:
+            - '8080:8080'                 
+        environment:
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://help-center-discovery-server:8761/eureka
+    help-center-auth:
+        depends_on:
+            - help-center-gateway
+        build:
+            context: ./help-center-auth
+            dockerfile: Dockerfile
+        environment:
+            - SPRING_PROFILES_ACTIVE=postgres              
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://help-center-discovery-server:8761/eureka
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://help-center-db:5432/db
+            - SPRING_DATASOURCE_USERNAME=admin
+            - SPRING_DATASOURCE_PASSWORD=admin
+    help-center-core:
+        depends_on:
+            - help-center-gateway
+            - help-center-rabbit-notifications   
+        build:
+            context: ./help-center-core
+            dockerfile: Dockerfile
+        environment:
+            - SPRING_PROFILES_ACTIVE=postgres   
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://help-center-discovery-server:8761/eureka
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://help-center-db:5432/db
+            - SPRING_DATASOURCE_USERNAME=admin
+            - SPRING_DATASOURCE_PASSWORD=admin
+            - SPRING_RABBITMQ_HOST=help-center-rabbit-notifications
+            - SPRING_RABBITMQ_PORT=5672
+    help-center-chat:
+        depends_on:
+            - help-center-gateway
+        build:
+            context: ./help-center-chat
+            dockerfile: Dockerfile
+        environment:
+            - SPRING_PROFILES_ACTIVE=postgres      
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://help-center-discovery-server:8761/eureka
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://help-center-db:5432/db
+            - SPRING_DATASOURCE_USERNAME=admin
+            - SPRING_DATASOURCE_PASSWORD=admin
+            - SPRING_CHAT_RABBITMQ_HOST=help-center-rabbit-chat
+            - SPRING_RABBITMQ_HOST=help-center-rabbit-notifications
+            - SPRING_RABBITMQ_PORT=5672
+    help-center-notification:
+        depends_on:
+            - help-center-rabbit-notifications
+        build:
+            context: ./help-center-notification
+            dockerfile: Dockerfile
+        environment:
+            - SPRING_PROFILES_ACTIVE=postgres              
+            - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://help-center-discovery-server:8761/eureka
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://help-center-db:5432/db
+            - SPRING_DATASOURCE_USERNAME=admin
+            - SPRING_DATASOURCE_PASSWORD=admin
+            - SPRING_RABBITMQ_HOST=help-center-rabbit-notifications
+            - SPRING_RABBITMQ_PORT=5672
+    help-center-db:
+        image: 'postgres:latest'
+        ports:
+            - '5432:5432'        
+        environment:
+            - POSTGRES_PASSWORD=admin
+            - POSTGRES_USER=admin
+            - POSTGRES_DB=db
+    help-center-rabbit-chat:
+        build: 
+            context: ./rabbitMQ
+            dockerfile: Dockerfile
+        expose:
+            - '5672'
+        ports:
+            - '15672:15672'
+            - '61613:61613'            
+    help-center-rabbit-notifications:
+        image: rabbitmq:3-management
+        ports:
+            - '15673:15672'       
+        expose: 
+            - '5672'
+    help-center-frontend:
+        stdin_open: true
+        build: 
+            context: ./help-center-front
+            dockerfile: Dockerfile
+        volumes:
+            - /app/node_modules
+            - ./help-center-front:/app
+        ports:
+            - '4200:4200'

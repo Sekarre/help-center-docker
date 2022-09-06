@@ -1,0 +1,26 @@
+.center {
+  margin: auto;
+  width: 80%;
+  padding: 4em;
+}
+
+.issue-form {
+  /*min-width: 150px;*/
+  min-width: 10%;
+  /*max-width: 500px;*/
+  max-width: 50%;
+  width: 60%;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.width-70 {
+  width: 70%;
+}
+
+.issue-button-row {
+  display: table-cell;
+  width: 60%;
+}
